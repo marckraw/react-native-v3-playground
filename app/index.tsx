@@ -4,6 +4,8 @@ import {
   Text,
   TextInput,
   ScrollView,
+  FlatList,
+  View,
 } from "react-native";
 import { theme } from "../theme";
 import { ShoppingListItem } from "../components/ShoppingListItem";
@@ -45,43 +47,45 @@ export default function App() {
   };
 
   return (
-    <ScrollView
-      style={styles.container}
-      contentContainerStyle={styles.contentContainer}
-    >
-      <TouchableOpacity
-        onPress={() => {
-          router.push(navigationTarget);
-        }}
-      >
-        <Text>go to {navigationTarget}</Text>
-      </TouchableOpacity>
-      <TextInput
-        value={navigationTarget}
-        onChangeText={handleOnChangeNavigationTarget}
-        style={styles.textInput}
-        placeholder="Enter your navigation target"
-        returnKeyType="done"
-        onSubmitEditing={() => {
-          router.push(navigationTarget);
-        }}
+    <>
+      <FlatList
+        data={list}
+        style={styles.container}
+        contentContainerStyle={styles.contentContainer}
+        renderItem={({ item }) => (
+          <ShoppingListItem name={item.name} isCompleted={item.isCompleted} />
+        )}
+        ListHeaderComponent={
+          <TextInput
+            value={text}
+            onChangeText={handleOnChangeText}
+            style={styles.textInput}
+            placeholder="Enter your new shoping list item"
+            returnKeyType="done"
+            onSubmitEditing={handleSubmit}
+          />
+        }
       />
-      <TextInput
-        value={text}
-        onChangeText={handleOnChangeText}
-        style={styles.textInput}
-        placeholder="Enter your new shoping list item"
-        returnKeyType="done"
-        onSubmitEditing={handleSubmit}
-      />
-      {list.map((item) => (
-        <ShoppingListItem
-          key={item.id}
-          name={item.name}
-          isCompleted={item.isCompleted}
+      <View>
+        <TouchableOpacity
+          onPress={() => {
+            router.push(navigationTarget);
+          }}
+        >
+          <Text>go to {navigationTarget}</Text>
+        </TouchableOpacity>
+        <TextInput
+          value={navigationTarget}
+          onChangeText={handleOnChangeNavigationTarget}
+          style={styles.textInput}
+          placeholder="Enter your navigation target"
+          returnKeyType="done"
+          onSubmitEditing={() => {
+            router.push(navigationTarget);
+          }}
         />
-      ))}
-    </ScrollView>
+      </View>
+    </>
   );
 }
 
