@@ -10,7 +10,10 @@ import {
 import { theme } from "../theme";
 import { ShoppingListItem } from "../components/ShoppingListItem";
 import { useRouter } from "expo-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { getFromStorage, saveToStorage } from "../utils/storage";
+
+const storageKey = "shopping-list";
 
 type ShoppingListItemType = {
   id: string;
@@ -47,6 +50,16 @@ export default function App() {
   const [list, setList] = useState<ShoppingListItemType[]>(initialList);
   const router = useRouter();
 
+  useEffect(() => {
+    const fetchInitial = async () => {
+      const data = await getFromStorage(storageKey);
+      if (data) {
+        setList(data);
+      }
+    };
+    fetchInitial();
+  }, []);
+
   const handleOnChangeText = (text: string) => {
     setText(text);
   };
@@ -56,7 +69,7 @@ export default function App() {
   };
 
   const handleSubmit = () => {
-    setList([
+    const newList = [
       ...list,
       {
         id: new Date().getTime().toString(),
@@ -64,7 +77,9 @@ export default function App() {
         isCompleted: false,
         lastUpdatedTimestamp: Date.now(),
       },
-    ]);
+    ];
+    setList(newList);
+    saveToStorage(storageKey, newList);
     setText("");
   };
 
