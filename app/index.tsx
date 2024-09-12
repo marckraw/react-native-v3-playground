@@ -1,14 +1,13 @@
-import { StatusBar } from "expo-status-bar";
 import {
   StyleSheet,
   TouchableOpacity,
-  View,
   Text,
   TextInput,
+  ScrollView,
 } from "react-native";
 import { theme } from "../theme";
 import { ShoppingListItem } from "../components/ShoppingListItem";
-import { Link, useRouter } from "expo-router";
+import { useRouter } from "expo-router";
 import { useState } from "react";
 
 type ShoppingListItemType = {
@@ -46,7 +45,10 @@ export default function App() {
   };
 
   return (
-    <View style={styles.container}>
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={styles.contentContainer}
+    >
       <TouchableOpacity
         onPress={() => {
           router.push(navigationTarget);
@@ -79,8 +81,7 @@ export default function App() {
           isCompleted={item.isCompleted}
         />
       ))}
-      <StatusBar style="auto" />
-    </View>
+    </ScrollView>
   );
 }
 
@@ -88,8 +89,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: theme.colors.white,
-    alignItems: "center",
-    justifyContent: "center",
+  },
+  contentContainer: {
+    padding: 12,
   },
   textInput: {
     width: "80%",
