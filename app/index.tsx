@@ -16,12 +16,29 @@ type ShoppingListItemType = {
   id: string;
   name: string;
   isCompleted: boolean;
+  completedAtTimestamp?: number;
+  lastUpdatedTimestamp: number;
 };
 
 const initialList: ShoppingListItemType[] = [
-  { id: "1", name: "Coffee", isCompleted: false },
-  { id: "2", name: "Tea", isCompleted: true },
-  { id: "3", name: "Milk", isCompleted: false },
+  {
+    id: "1",
+    name: "Coffee",
+    isCompleted: false,
+    lastUpdatedTimestamp: Date.now(),
+  },
+  {
+    id: "2",
+    name: "Tea",
+    isCompleted: true,
+    lastUpdatedTimestamp: Date.now(),
+  },
+  {
+    id: "3",
+    name: "Milk",
+    isCompleted: false,
+    lastUpdatedTimestamp: Date.now(),
+  },
 ];
 
 export default function App() {
@@ -41,20 +58,78 @@ export default function App() {
   const handleSubmit = () => {
     setList([
       ...list,
-      { id: new Date().getTime().toString(), name: text, isCompleted: false },
+      {
+        id: new Date().getTime().toString(),
+        name: text,
+        isCompleted: false,
+        lastUpdatedTimestamp: Date.now(),
+      },
     ]);
     setText("");
   };
 
+  const handleDelete = (id: string) => {
+    const newList = list.filter((item) => item.id !== id);
+    setList(newList);
+  };
+
+  const handleToggleComplete = (id: string) => {
+    const newList = list.map((item) => {
+      if (item.id === id) {
+        return {
+          ...item,
+          completedAtTimestamp: item.completedAtTimestamp
+            ? undefined
+            : Date.now(),
+        };
+      }
+      return item;
+    });
+    setList(newList);
+  };
+
+  // Sorts shopping list: incomplete items first (by last update), then completed items (by completion time)
+  function orderShoppingList(shoppingList: ShoppingListItemType[]) {
+    return shoppingList.sort((item1, item2) => {
+      if (item1.completedAtTimestamp && item2.completedAtTimestamp) {
+        return item2.completedAtTimestamp - item1.completedAtTimestamp;
+      }
+
+      if (item1.completedAtTimestamp && !item2.completedAtTimestamp) {
+        return 1;
+      }
+
+      if (!item1.completedAtTimestamp && item2.completedAtTimestamp) {
+        return -1;
+      }
+
+      if (!item1.completedAtTimestamp && !item2.completedAtTimestamp) {
+        return item2.lastUpdatedTimestamp - item1.lastUpdatedTimestamp;
+      }
+
+      return 0;
+    });
+  }
+
   return (
     <>
       <FlatList
-        data={list}
+        data={orderShoppingList(list)}
         style={styles.container}
         contentContainerStyle={styles.contentContainer}
         renderItem={({ item }) => (
-          <ShoppingListItem name={item.name} isCompleted={item.isCompleted} />
+          <ShoppingListItem
+            name={item.name}
+            isCompleted={Boolean(item.completedAtTimestamp)}
+            onDelete={() => handleDelete(item.id)}
+            onToggleComplete={() => handleToggleComplete(item.id)}
+          />
         )}
+        ListEmptyComponent={
+          <View style={{ padding: 24 }}>
+            <Text>No items in the list</Text>
+          </View>
+        }
         ListHeaderComponent={
           <TextInput
             value={text}
@@ -66,7 +141,7 @@ export default function App() {
           />
         }
       />
-      <View>
+      <View style={{ padding: 24 }}>
         <TouchableOpacity
           onPress={() => {
             router.push(navigationTarget);

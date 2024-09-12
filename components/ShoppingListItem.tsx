@@ -1,18 +1,32 @@
-import { View, Text, TouchableOpacity, StyleSheet, Alert } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  Alert,
+  Pressable,
+} from "react-native";
 import { theme } from "../theme";
 import AntDesign from "@expo/vector-icons/AntDesign";
 
 type Props = {
   name: string;
   isCompleted: boolean;
+  onDelete: () => void;
+  onToggleComplete: () => void;
 };
 
-export const ShoppingListItem = ({ name, isCompleted }: Props) => {
+export const ShoppingListItem = ({
+  name,
+  isCompleted,
+  onDelete,
+  onToggleComplete,
+}: Props) => {
   const handleDelete = () => {
     Alert.alert(`Are you sure you want to delete ${name}?`, "Oh well...", [
       {
         text: "Yes",
-        onPress: () => console.log("Ok, deleting"),
+        onPress: onDelete,
         style: "destructive",
       },
       {
@@ -23,11 +37,12 @@ export const ShoppingListItem = ({ name, isCompleted }: Props) => {
   };
 
   return (
-    <View
+    <Pressable
       style={[
         styles.itemContainer,
         isCompleted ? styles.completedContainer : undefined,
       ]}
+      onPress={onToggleComplete}
     >
       <Text style={styles.itemText}>{name}</Text>
       <TouchableOpacity
@@ -41,13 +56,13 @@ export const ShoppingListItem = ({ name, isCompleted }: Props) => {
           color={isCompleted ? theme.colors.green : theme.colors.gray}
         />
       </TouchableOpacity>
-    </View>
+    </Pressable>
   );
 };
 
 const styles = StyleSheet.create({
   completedContainer: {
-    backgroundColor: theme.colors.secondary,
+    backgroundColor: theme.colors.red,
     borderBottomColor: theme.colors.black,
     borderBottomWidth: 1,
   },
@@ -61,6 +76,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   itemText: {
+    flex: 1,
     color: theme.colors.secondary,
   },
   button: {
