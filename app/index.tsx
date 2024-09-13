@@ -3,15 +3,16 @@ import {
   TouchableOpacity,
   Text,
   TextInput,
-  ScrollView,
   FlatList,
   View,
+  LayoutAnimation,
 } from "react-native";
 import { theme } from "../theme";
 import { ShoppingListItem } from "../components/ShoppingListItem";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { getFromStorage, saveToStorage } from "../utils/storage";
+import * as Haptics from "expo-haptics";
 
 const storageKey = "shopping-list";
 
@@ -54,6 +55,7 @@ export default function App() {
     const fetchInitial = async () => {
       const data = await getFromStorage(storageKey);
       if (data) {
+        LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
         setList(data);
       }
     };
@@ -78,6 +80,7 @@ export default function App() {
         lastUpdatedTimestamp: Date.now(),
       },
     ];
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
     setList(newList);
     saveToStorage(storageKey, newList);
     setText("");
@@ -85,12 +88,19 @@ export default function App() {
 
   const handleDelete = (id: string) => {
     const newList = list.filter((item) => item.id !== id);
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     setList(newList);
   };
 
   const handleToggleComplete = (id: string) => {
     const newList = list.map((item) => {
       if (item.id === id) {
+        if (item.completedAtTimestamp) {
+          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+        } else {
+          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+        }
         return {
           ...item,
           completedAtTimestamp: item.completedAtTimestamp
@@ -100,6 +110,7 @@ export default function App() {
       }
       return item;
     });
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
     setList(newList);
   };
 
