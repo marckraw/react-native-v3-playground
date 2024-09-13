@@ -26,6 +26,21 @@
     },
     "plugins": [
       "expo-router"
-    ]
+    ],
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "e026549d-7f65-4056-9cdf-4d1103f72794"
+      }
+    },
+    "owner": "marckraw",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/e026549d-7f65-4056-9cdf-4d1103f72794"
+    }
   }
 }
