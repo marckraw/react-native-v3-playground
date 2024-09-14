@@ -1,5 +1,7 @@
 import { Tabs } from "expo-router";
 import Feather from "@expo/vector-icons/Feather";
+// Import your global CSS file
+import "../global.css";
 import { theme } from "../theme";
 
 export default function Layout() {
